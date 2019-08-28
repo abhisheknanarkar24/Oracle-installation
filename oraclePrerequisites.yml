@@ -1,0 +1,38 @@
+#####################################################################################
+# Date            Version            Change
+# 01/03/2019      1.0                created (previous)
+# 11/04/2019      2.0                backlog fixes and new features (current)
+#####################################################################################
+---
+
+- hosts: "{{ hosts }}"
+#  become: "{{ lookup('ini','ANSIBLE_BECOME section=ANSIBLE file={{ configFile }}') }}"
+  become: yes
+  vars:
+    support_software: "{{ lookup('ini', 'SOFTWARE_SOURCE section=Common_Settings file={{ configFile }}') }}/Database"
+    app_dir: "{{ lookup('ini', 'CONNECT_APPS_LIN section=Common_Settings file={{ configFile }}') }}"
+  tasks:
+  - name: copy oracle dependencies
+    copy:
+      src: "{{ support_software }}/oracle_dependency"
+      dest: "{{ app_dir }}/"
+
+  - name: Define a repository
+    shell: 'sudo createrepo "{{ app_dir }}"/oracle_dependency/'
+
+  - name: Create a repository 
+    yum_repository:
+      name: oracle
+      description: "This is local repository to install oracle prequisites"
+      baseurl: file://{{ app_dir }}/oracle_dependency/
+      gpgcheck: no
+      enabled: 1
+      state: present
+
+  - name: Install the packages
+    command: 'sudo yum install -y binutils.x86_64 compat-libcap1.x86_64 gcc.x86_64 gcc-c++.x86_64 glibc.i686 glibc.x86_64 
+ glibc-devel.i686 glibc-devel.x86_64 ksh compat-libstdc++-33 libaio.i686 libaio.x86_64 libaio-devel.i686 libaio-devel.x86_64 
+ libgcc.i686 libgcc.x86_64 libstdc++.i686 libstdc++.x86_64 libstdc++-devel.i686 libstdc++-devel.x86_64 libXi.i686 libXi.x86_64 
+ libXtst.i686 libXtst.x86_64 make.x86_64 sysstat.x86_64'
+    ignore_errors: yes
+

@@ -1,0 +1,15 @@
+#####################################################################################
+# Date            Version            Change
+# 01/03/2019      1.0                created (previous)
+# 11/04/2019      2.0                backlog fixes and new features (current)
+#####################################################################################
+---
+
+- import_playbook: verifyOracle_lin.yml
+
+# this pre-req step required if the host machine is CentOS
+- import_playbook: oraclePrerequisites.yml
+  when: sqlplus_version.stdout.find("SQL*Plus") == -1 
+
+- import_playbook: installOracle_lin.yml
+  when: sqlplus_version.stdout.find("SQL*Plus") == -1

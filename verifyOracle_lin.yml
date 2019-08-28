@@ -1,0 +1,24 @@
+#####################################################################################
+# Date            Version            Change
+# 01/03/2019      1.0                created (previous)
+# 11/04/2019      2.0                backlog fixes and new features (current)
+#####################################################################################
+---
+
+- hosts: "{{ hosts }}"
+  vars:
+  tasks:
+  - name: Verify if oracle is installed
+    shell: sqlplus -version
+    register: sqlplus_version
+    ignore_errors: true
+ 
+  - name: Print exists message to verify
+    debug:
+      msg: "Oracle is installed"
+    when: sqlplus_version.stdout.find('SQL*Plus') != -1
+
+  - name: Print error message
+    debug:
+      msg: "Oracle is not installed"
+    when: sqlplus_version.stdout.find("SQL*Plus") == -1
