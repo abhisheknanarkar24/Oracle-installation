@@ -1,9 +1,4 @@
 #!/bin/bash
-#####################################################################################
-# Date            Version            Change
-# 01/03/2019      1.0                created (previous)
-# 11/04/2019      2.0                backlog fixes and new features (current)
-#####################################################################################
 
 #Run this script as redHat user (or any user with sudo access)
 # Command line argument : <working-directory-name>
