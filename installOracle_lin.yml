@@ -1,12 +1,7 @@
-#####################################################################################
-# Date            Version            Change
-# 01/03/2019      1.0                created (previous)
-# 11/04/2019      2.0                backlog fixes and new features (current)
-#####################################################################################
 ---
 
 - hosts: "{{ hosts }}"
-  become: "{{ lookup('ini', 'ANSIBLE_BECOME section=ANSIBLE file={{ configFile }}') }}"
+  become: true
   vars:
     config_dir: "{{ lookup('ini', 'COMMON_SCRIPTS section=ANSIBLE file={{ configFile }}')}}/config"
     software_dir: "{{ lookup('ini', 'CONNECT_SOFTWARE_LIN section=Common_Settings file={{ configFile }}') }}"
@@ -15,7 +10,7 @@
     install_response_file: "{{ lookup('ini', 'INSTALL_RESPONSE_SRC section=ORA file={{ configFile }}') }}"
     config_response_file: "{{ lookup('ini', 'CONFIG_RESPONSE_SRC section=ORA file={{ configFile }}') }}"
     install_shell_script: "{{ lookup('ini', 'ORACLE_INSTALL_SHELL_SCRIPT section=ORA file={{ configFile }}') }}"
-#    oracle_password: "{{ lookup('ini', 'ORACLE_PASSWORD section=ORA file={{ configFile }}') }}"
+    oracle_password: "{{ lookup('ini', 'ORACLE_PASSWORD section=ORA file={{ configFile }}') }}"
     oracle_password: "{{ oracle.password }}"
     oracle_home: "{{ lookup('ini', 'ORACLE_HOME section=ORA file={{ configFile }}') }}"
     oracle_base: "{{ lookup('ini', 'ORACLE_BASE section=ORA file={{ configFile }}') }}"
@@ -25,16 +20,13 @@
     memory_allocation: "{{ lookup('ini', 'MEMORY_ALLOCATION section=ORA file={{ configFile }}') }}"
     oracle_data_location: "{{ lookup('ini', 'ORACLE_DATA_LOCATION section=ORA file={{ configFile }}') }}"
   tasks:
-    - include_vars:
-        file: "/etc/ansible/group_vars_{{ deployment_environment }}/oracle.yml"
-        name: oracle
 
-#    - name: Creating devops directory
-#      file:
-#        path: "{{ software_dir }}"
-#        state: directory
-#        mode: u=rwx,g=rwx,o=rwx
-
+    - name: Creating devops directory
+      file:
+        path: "{{ software_dir }}"
+        state: directory
+        mode: u=rwx,g=rwx,o=rwx
+        
     - name: Copy database zips to the server
       copy:
         src: "{{ item }}"
@@ -68,7 +60,7 @@
           oracle_data_location: "<ORACLE_DATA_LOCATION>"
         value: 
 #          oracle_password: "{{ lookup('ini', 'ORACLE_PASSWORD section=ORA file={{ configFile }}') }}"
-          oracle_password: "{{ oracle.password }}"
+          oracle_password: "{{ oracle_password }}"
           oracle_home: "{{ lookup('ini', 'ORACLE_HOME section=ORA file={{ configFile }}') }}"
           oracle_base: "{{ lookup('ini', 'ORACLE_BASE section=ORA file={{ configFile }}') }}"
           inventory_location: "{{ lookup('ini', 'INVENTORY_LOCATION section=ORA file={{ configFile }}') }}"
@@ -80,4 +72,4 @@
         - regex
 
     - name: Run the script to install oracle
-      shell: "sudo sh {{ software_dir }}/{{ install_shell_script }} {{ software_dir }} {{ oracle.password }}"
+      shell: "sh {{ software_dir }}/{{ install_shell_script }} {{ software_dir }} {{ oracle_password }}"
