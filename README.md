@@ -2,7 +2,7 @@
 This repository consists oracle installation scripts.
 
 To install oracle on linux, need to follow some prerequisites
-1. download linux setup for oracle 12c
+1. download linux setup for oracle 12c https://www.oracle.com/database/technologies/database12c-linux-downloads.html
 
 2. sudo access should be have to ansible user
 
